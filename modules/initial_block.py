@@ -1,19 +1,17 @@
 import torch.nn as nn
 import torch
 class Initial(nn.Module):
-    def __init__(self, in_channels):
+    def __init__(self, in_channels, out_channels):
         super(Initial, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels=16, kernel_size=3, stride=2, padding=1)
-        self.maxpool = nn.MaxPool2d(2)
-        self.bn = nn.BatchNorm2d(16)
+        self.conv1 = nn.Conv2d(in_channels, out_channels=out_channels-in_channels, kernel_size=3, stride=2, padding=1)
+        self.maxpool = nn.MaxPool2d(2, 2)
+        self.bn = nn.BatchNorm2d(out_channels-in_channels)
         self.prelu = nn.PReLU()
 
     def forward(self, x):
         x_r = self.maxpool(x)
         x_l = self.bn(self.prelu(self.conv1(x)))
-
         x = torch.cat([x_r, x_l], 1)
-        
         return x
 
 if __name__ == '__main__':
