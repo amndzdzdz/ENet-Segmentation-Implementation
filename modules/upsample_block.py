@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from initial_block import Initial
 
-class DownsampleBlock(nn.Module):
+class UpsampleBlock(nn.Module):
     def __init__(self, in_channels, out_channels, ratio, dropout_rate):
-        super(DownsampleBlock, self).__init__()
+        super(UpsampleBlock, self).__init__()
         self.dropout_rate = dropout_rate
         self.inter_channels = in_channels//ratio
 
@@ -45,7 +45,7 @@ class DownsampleBlock(nn.Module):
 
 if __name__ == "__main__":
     x = torch.randn((1, 128, 64, 64))
-    bottleneck = DownsampleBlock(
+    bottleneck = UpsampleBlock(
         in_channels=128, 
         out_channels=64,
         ratio=4, 
