@@ -43,7 +43,7 @@ class ENet(nn.Module):
         self.bottleneck50 = UpsampleBlock(in_channels=64, out_channels=16, ratio=4, dropout_rate=0.01)
         self.bottleneck51 = RegularBlock(in_channels=16, out_channels=16, ratio=4, dropout_rate=0.01)
 
-        self.linear = nn.Linear(in_features=1048576, out_features=out_channels)
+        self.fullconv = nn.ConvTranspose2d(in_channels=16, out_channels=out_channels, kernel_size=2, stride=2)
 
     def forward(self, x):
 
@@ -81,9 +81,7 @@ class ENet(nn.Module):
         x = self.bottleneck50(x)
         x = self.bottleneck51(x)
 
-        x = torch.flatten(x)
-
-        x = self.linear(x)
+        x = self.fullconv(x)
 
         return x
 
