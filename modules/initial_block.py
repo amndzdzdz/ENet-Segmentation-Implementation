@@ -1,8 +1,8 @@
 import torch.nn as nn
 import torch
-class Initial(nn.Module):
+class InitialBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(Initial, self).__init__()
+        super(InitialBlock, self).__init__()
         self.conv1 = nn.Conv2d(in_channels, out_channels=out_channels-in_channels, kernel_size=3, stride=2, padding=1)
         self.maxpool = nn.MaxPool2d(2, 2)
         self.bn = nn.BatchNorm2d(out_channels-in_channels)
@@ -16,5 +16,5 @@ class Initial(nn.Module):
 
 if __name__ == '__main__':
     x = torch.randn((1, 3, 512, 512))
-    initial = Initial(3)
+    initial = InitialBlock(3)
     pred = initial(x)
