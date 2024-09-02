@@ -86,8 +86,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--num_epochs", default=50, help='specify how long the model will be trained')
-    parser.add_argument("--lr", default=0.0005, help='specify how long the model will be trained')
-    parser.add_argument("--batch_size", default=10, help='specify how long the model will be trained')
+    parser.add_argument("--lr", default=0.0005, help='specify the learning rate')
+    parser.add_argument("--batch_size", default=10, help='specify the batch size')
+    parser.add_argument("--weight_decay", default=0.0002, help='specify the weight decay')
     args = parser.parse_args()
-    
+
     main(args)
