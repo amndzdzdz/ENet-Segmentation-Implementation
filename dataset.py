@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch
 import torchvision.transforms as transforms
-from utils import get_image_names
 from PIL import Image
 import numpy as np
 import os
@@ -10,12 +9,15 @@ class GTAData(nn.Module):
     """ 
     Custom Dataset for the GTA5 Data
     """
+    NUM_CLASSES = 20
+
     def __init__(self, root_dir, transforms, categories):
         self.image_dir = os.path.join(root_dir, "images")
         self.label_dir = os.path.join(root_dir, "labels")
         self.transforms = transforms
         self.categories = categories
-        self.image_names = get_image_names(root_dir)
+        self.image_names = self._get_image_names(root_dir)
+        self.class_map = dict(zip(self.categories, range(self.NUM_CLASSES)))
 
     def __getitem__(self, idx):
         image_name = self.image_names[idx]
@@ -25,7 +27,8 @@ class GTAData(nn.Module):
         
         image = Image.open(image_path).convert("RGB")
         label = Image.open(label_path)
-        label = label.resize((512, 512))
+
+        label = label.resize((256, 256))
         label = np.asarray(label)
         normalized_label = np.zeros(label.shape)
 
@@ -33,13 +36,23 @@ class GTAData(nn.Module):
             image = self.transforms(image)
 
         #avoid indexation error
-        for i in range(len(self.categories)):
-            cat = self.categories[i]
-            normalized_label[label == cat] = i 
+        for category in self.categories:
+            normalized_label[label == category] = self.class_map[category] 
 
         normalized_label = torch.from_numpy(normalized_label).type(torch.IntTensor)
 
-        return image, normalized_label.squeeze()
+        return image, normalized_label
 
     def __len__(self):
         return len(self.image_names)
+
+    def _get_image_names(self, path):
+        image_names = []
+        image_dir = os.path.join(path, "images")
+        i = 0
+        for imagename in os.listdir(image_dir):
+            i += 1 
+            image_names.append(imagename)
+            if i > 69:
+                break
+        return image_names
