@@ -1,23 +1,18 @@
 import os
 import torch
 import torch.nn.functional as F
+from torchvision import transforms
 import torchvision.transforms.functional as functional
 import numpy as np
 from torch.utils.data import random_split, DataLoader
 import matplotlib.pyplot as plt
+from dataset import GTAData
 
-def get_image_names(path):
-    image_names = []
-    image_dir = os.path.join(path, "images")
-    i = 0
-    for imagename in os.listdir(image_dir):
-        i += 1 
-        image_names.append(imagename)
-        if i > 69:
-            break
-    return image_names
+def create_dataloaders(batch_size=16, test_size=0.2):
+    transform = transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()])
+    categories = [0, 7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33]
+    dataset = GTAData("data", transform, categories)
 
-def create_dataloaders(dataset, batch_size=16, test_size=0.2):
     train_size = int((1-test_size) * dataset.__len__())
     test_size = int(test_size * dataset.__len__())
 
