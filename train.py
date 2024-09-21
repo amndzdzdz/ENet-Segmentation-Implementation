@@ -7,7 +7,7 @@ writer = SummaryWriter()
 from dataset import GTAData
 from model import ENet
 from tqdm import tqdm
-from utils import create_dataloaders, probability_to_class, visualize_sample
+from utils import create_dataloaders, probability_to_class, visualize_sample, calculate_metrics
 import argparse
 
 """
@@ -35,8 +35,10 @@ def train_one_epoch(epoch, dataloader, device, model, criterion, optimizer):
         optimizer.step()
 
     avg_loss = train_loss / num_train_batches
+    dice = calculate_metrics(target, pred)
+    visualize_sample(image, target, pred, epoch)
 
-    return avg_loss
+    return avg_loss, dice
 
 
 def eval_one_epoch(epoch, dataloader, device, model, criterion):
@@ -66,11 +68,15 @@ def train(num_epochs, train_loader, val_loader, device, model, criterion, optimi
     Training script
     """
     for epoch in range(num_epochs):
-        train_loss = train_one_epoch(epoch, train_loader, device, model, criterion, optimizer)
+        train_loss, dice = train_one_epoch(epoch, train_loader, device, model, criterion, optimizer)
         val_loss = eval_one_epoch(epoch, val_loader, device, model, criterion)
+
         print(f"Epoch {epoch}: train_loss={train_loss}, val_loss={val_loss}")
+        
         writer.add_scalar("Loss/train", train_loss, epoch)
         writer.add_scalar("Loss/val", val_loss, epoch)
+        writer.add_scalar("Metrics/dice", dice, epoch)
+        #writer.add_scalar("Metrics/iou", iou, epoch)
 
 
 def main(args):
@@ -94,7 +100,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num_epochs", default=20, help='specify how long the model will be trained')
+    parser.add_argument("--num_epochs", default=50, help='specify how long the model will be trained')
     parser.add_argument("--lr", default=0.0005, help='specify the learning rate')
     parser.add_argument("--batch_size", default=10, help='specify the batch size')
     parser.add_argument("--weight_decay", default=0.000, help='specify the weight decay')

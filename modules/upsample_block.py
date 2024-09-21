@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from initial_block import Initial
 
 class UpsampleBlock(nn.Module):
     def __init__(self, in_channels, out_channels, ratio, dropout_rate):
@@ -33,7 +32,6 @@ class UpsampleBlock(nn.Module):
         identity = self.upsample(x)
         identity = self.bn3(self.prelu(self.conv1(identity)))
         
-
         #right path
         x_r = self.bn1(self.prelu(self.projection(x)))
         x_r = self.bn2(self.prelu(self.conv2(x_r)))

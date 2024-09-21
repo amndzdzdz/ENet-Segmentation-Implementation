@@ -34,7 +34,7 @@ def probability_to_class(tensor, categories):
 
     return mask
 
-def visualize_sample(image, target, pred, epoch):
+def visualize_sample(image, target, pred, epoch, save=False):
         image = image[0].permute(1, 2, 0).numpy()  # Permute dimensions from (C, H, W) to (H, W, C)
         target = target[0].numpy()
         
@@ -55,8 +55,11 @@ def visualize_sample(image, target, pred, epoch):
         axes[2].imshow(pred)
         axes[2].set_title('prediction')
         axes[2].axis('off') 
-
-        plt.savefig(f"visualizations/{epoch}.png")
+        
+        if save:
+            plt.savefig(f"visualizations/{epoch}.png")
+        else:
+            plt.plot()
 
 def calculate_metrics(target, pred):
     pred = probability_to_class(pred, categories = [0, 7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33])

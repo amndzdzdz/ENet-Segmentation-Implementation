@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+
 class InitialBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
         super(InitialBlock, self).__init__()
